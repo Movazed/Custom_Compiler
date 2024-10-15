@@ -29,7 +29,7 @@ typedef struct {
     char* value;
 } TokenLiteral;
 
-TokenLiteral generate_number(char current, FILE *file){
+TokenLiteral *generate_number(char current, FILE *file){
     TokenLiteral *token;
     token->type = INT;
     char *value = malloc(sizeof(char) * 8);
@@ -59,8 +59,8 @@ void lexer(FILE *file){
         } else if(current == ')'){
             printf("FOUND CLOSE PAREN\n");
         }  else if(isdigit(current)){
-            TokenLiteral test_token = generate_number(current, file);
-            printf("TEST TOKEN VALUE: %s\n", test_token.value);
+            TokenLiteral *test_token = generate_number(current, file);
+            printf("TEST TOKEN VALUE: %s\n", test_token->value);
 
             // printf("FOUND DIGIT: %d\n", current - '0');
         } else if(isalpha(current)){

@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<ctype.h>
+#include<string.h>
 
 typedef enum{ 
     SEMI,
@@ -30,7 +31,7 @@ typedef struct {
 } TokenLiteral;
 
 TokenLiteral *generate_number(char current, FILE *file){
-    TokenLiteral *token;
+    TokenLiteral *token = malloc(sizeof(TokenLiteral));
     token->type = INT;
     char *value = malloc(sizeof(char) * 8);
     int value_index = 0; 
@@ -40,18 +41,32 @@ TokenLiteral *generate_number(char current, FILE *file){
     }   
     value[value_index] = current;
     value_index++;
-    printf("%c", current);
     current = fgetc(file);
     }
     token->value = value;
-    free(value);
-    return(*token);
+    return token;
+}
+
+TokenKeyword *generate_keyword(char current, FILE *file){
+    TokenKeyword *token = malloc(sizeof(TokenKeyword));
+    char *keyword = malloc(sizeof(char) * 4);
+    int keyword_index = 0;
+    while(isalpha(current) && current != EOF){
+      keyword[keyword_index] = current;
+      current = fgetc(file);
+    }
+    printf("%s\n", keyword);
+    if(strcmp(keyword, "exit")){
+        token->type = EXIT;
+    }
+    return token;
 }
 
 void lexer(FILE *file){ 
     char current = fgetc(file); 
 
-    while(current != EOF){   
+    while(current != EOF){  
+        printf("%c\n", current); 
         if(current == ';'){ 
             printf("FOUND SEMICOLON\n");
         } else if(current == '('){
@@ -59,12 +74,14 @@ void lexer(FILE *file){
         } else if(current == ')'){
             printf("FOUND CLOSE PAREN\n");
         }  else if(isdigit(current)){
-            TokenLiteral *test_token = generate_number(current, file);
+            TokenLiteral *test_token = generate_number(current, file); 
             printf("TEST TOKEN VALUE: %s\n", test_token->value);
 
             // printf("FOUND DIGIT: %d\n", current - '0');
         } else if(isalpha(current)){
-            printf("FOUND CHARACTER: %c\n", current);
+            TokenKeyword *test_keyword = generate_keyword(current, file);
+            printf("%c\n", current);
+            // printf("FOUND CHARACTER: %c\n", current);
         }
         current = fgetc(file);  
     }
